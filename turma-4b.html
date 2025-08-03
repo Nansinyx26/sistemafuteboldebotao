@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Campeonato de Futebol de Botão - Turma 4B</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>⚽ Campeonato de Futebol de Botão - Turma 4B</h1>
+
+        <div class="card">
+            <h2>🏆 Times e Jogadores</h2>
+            <div class="teams-grid" id="teamsList"></div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Jogo Atual</h2>
+            <div class="current-game" id="currentGame">
+                <div class="game-header">
+                    <span id="gameNumber">Jogo 1 de 21</span>
+                </div>
+                <div class="match-display" id="matchDisplay">As Capivaras × Girl Power</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 Ficha de Jogo</h2>
+            <div class="timer-section">
+                <div class="timer-display" id="timerDisplay">10:00</div>
+                <div class="timer-controls">
+                    <button onclick="toggleTimer()" id="timerBtn">▶️ Play</button>
+                    <button onclick="resetTimer()" id="resetBtn">🔄 Reset</button>
+                </div>
+            </div>
+            <div class="game-sheet" id="gameSheet">
+                <div class="team-section">
+                    <div class="team-header">
+                        <span id="team1Name">As Capivaras</span>
+                        <span class="team-goals">[Gols: <span id="team1Goals">0</span>]</span>
+                    </div>
+                    <div class="players-list" id="team1Players"></div>
+                </div>
+
+                <div class="vs-divider">×</div>
+
+                <div class="team-section">
+                    <div class="team-header">
+                        <span id="team2Name">Girl Power</span>
+                        <span class="team-goals">[Gols: <span id="team2Goals">0</span>]</span>
+                    </div>
+                    <div class="players-list" id="team2Players"></div>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <div class="team-goal-controls">
+                    <div class="team-control">
+                        <h4 id="team1ControlName">As Capivaras</h4>
+                        <div class="quick-goal-section">
+                            <select id="team1PlayerSelect">
+                                <option value="">Selecione jogador</option>
+                            </select>
+                            <input type="number" id="team1GoalsInput" min="0" value="0" class="quick-goal-input" placeholder="Gols">
+                            <button onclick="addQuickGoal(1)" class="quick-goal-btn">⚽ Adicionar Gol</button>
+                        </div>
+                    </div>
+
+                    <div class="team-control">
+                        <h4 id="team2ControlName">Girl Power</h4>
+                        <div class="quick-goal-section">
+                            <select id="team2PlayerSelect">
+                                <option value="">Selecione jogador</option>
+                            </select>
+                            <input type="number" id="team2GoalsInput" min="0" value="0" class="quick-goal-input" placeholder="Gols">
+                            <button onclick="addQuickGoal(2)" class="quick-goal-btn">⚽ Adicionar Gol</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="finalizarJogo()" id="finishBtn">🏁 Finalizar Jogo</button>
+                <div class="winner-display" id="winnerDisplay" style="display: none;">
+                    <div class="winner-text" id="winnerText"></div>
+                    <button onclick="proximoJogo()" id="nextBtn">🔄 Próximo Jogo</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Resultados</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jogo</th>
+                        <th>Confronto</th>
+                        <th>Resultado</th>
+                        <th>Vencedor</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTable"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>🥇 Artilharia</h2>
+            <div class="artilharia-section">
+                <div class="chart-container" id="scorersChart">
+                    <div style="text-align: center; padding: 4rem; color: #666; font-size: 1.2rem;">
+                        🥅 Nenhum gol marcado ainda
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏆 Classificação</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Time</th>
+                        <th>Jogos</th>
+                        <th>Vitórias</th>
+                        <th>Empates</th>
+                        <th>Derrotas</th>
+                        <th>Gols Pró</th>
+                        <th>Gols Contra</th>
+                        <th>Saldo</th>
+                        <th>Pontos</th>
+                    </tr>
+                </thead>
+                <tbody id="standingsTable"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <h2>📘 Histórico de Jogos</h2>
+        <div id="gamesBracket"></div>
+    </div>
+    <script src="script-4b.js"></script>
+    <script src="salvamento.js"></script>
+    <!-- Scripts -->
+    <script>
+        // Sistema de salvamento com localStorage
+
+        // Salvar dados no localStorage
+        function saveGameData() {
+            const gameData = {
+                games,
+                scorers,
+                standings,
+                currentGameIndex,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('soccerTournament_4B', JSON.stringify(gameData));
+        }
+
+        // Carregar dados do localStorage
+        function loadGameData() {
+            const savedData = localStorage.getItem('soccerTournament_4B');
+            if (savedData) {
+                try {
+                    const gameData = JSON.parse(savedData);
+
+                    if (gameData.games && gameData.scorers && gameData.standings) {
+                        games = gameData.games;
+                        scorers = gameData.scorers;
+                        standings = gameData.standings;
+                        currentGameIndex = gameData.currentGameIndex || 0;
+
+                        console.log('Dados carregados do localStorage');
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                    localStorage.removeItem('soccerTournament_4B');
+                }
+            }
+            return false;
+        }
+
+        // Resetar todos os dados
+        function resetTournament() {
+            if (confirm('⚠️ Tem certeza que deseja resetar todo o campeonato?\n\nTodos os jogos, gols e classificações serão perdidos!')) {
+                localStorage.removeItem('soccerTournament_4B');
+                currentGameIndex = 0;
+                scorers = {};
+
+                initializeGames();
+                initializeStandings();
+                loadCurrentGame();
+                updateResults();
+                updateStandings();
+                updateChart();
+
+                showNotification('🔄 Campeonato resetado com sucesso!');
+            }
+        }
+
+        // Mostrar notificação
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--accent-primary);
+                color: #000;
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+                box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+            `;
+
+            if (!document.getElementById('notification-style')) {
+                const style = document.createElement('style');
+                style.id = 'notification-style';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    .reset-btn {
+                        margin-left: 1rem !important;
+                        background: var(--accent-secondary) !important;
+                        color: white !important;
+                        font-size: 0.9rem !important;
+                        padding: 0.5rem 1rem !important;
+                    }
+                    .reset-btn:hover {
+                        filter: brightness(1.2) !important;
+                        transform: translateY(-2px) !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // Adicionar botão de reset
+        function addResetButton() {
+            const resultsCard = [...document.querySelectorAll('.card h2')]
+                .find(h2 => h2.textContent.includes('📊 Resultados'));
+
+            if (resultsCard && !resultsCard.querySelector('.reset-btn')) {
+                const resetBtn = document.createElement('button');
+                resetBtn.textContent = '🔄 Reset';
+                resetBtn.className = 'reset-btn';
+                resetBtn.onclick = resetTournament;
+                resultsCard.appendChild(resetBtn);
+            }
+        }
+
+        // Função init modificada
+        function init() {
+            const dataLoaded = loadGameData();
+
+            if (!dataLoaded) {
+                initializeGames();
+                initializeStandings();
+            }
+
+            renderTeams();
+            loadCurrentGame();
+            updateResults();
+            updateStandings();
+            updateChart();
+
+            // Adicionar botão de reset
+            setTimeout(addResetButton, 100);
+
+            // Mostrar info se dados foram carregados
+            if (dataLoaded) {
+                const finishedGames = games.filter(game => game.finished).length;
+                if (finishedGames > 0) {
+                    showNotification(`✅ ${finishedGames} jogos carregados`);
+                }
+            }
+        }
+
+        // Função finalizarJogo modificada
+        function finalizarJogo() {
+            const game = games[currentGameIndex];
+
+            pauseTimer();
+
+            game.team1.players.forEach((player, index) => {
+                const goals = parseInt(document.getElementById(`team1_player${index}`).value) || 0;
+                if (goals > 0) {
+                    scorers[player] = (scorers[player] || 0) + goals;
+                }
+            });
+
+            game.team2.players.forEach((player, index) => {
+                const goals = parseInt(document.getElementById(`team2_player${index}`).value) || 0;
+                if (goals > 0) {
+                    scorers[player] = (scorers[player] || 0) + goals;
+                }
+            });
+
+            let winnerText;
+            if (game.goals1 > game.goals2) {
+                game.winner = game.team1.name;
+                winnerText = `🟢 Vencedor: ${game.team1.name}`;
+            } else if (game.goals2 > game.goals1) {
+                game.winner = game.team2.name;
+                winnerText = `🟢 Vencedor: ${game.team2.name}`;
+            } else {
+                game.winner = 'Empate';
+                winnerText = `🟡 Empate`;
+            }
+
+            updateStandingsForGame(game);
+            game.finished = true;
+
+            // SALVAR AUTOMATICAMENTE
+            saveGameData();
+
+            document.getElementById('winnerText').textContent = winnerText;
+            document.getElementById('winnerDisplay').style.display = 'block';
+            document.getElementById('finishBtn').style.display = 'none';
+
+            updateResults();
+            updateStandings();
+            updateChart();
+        }
+
+        // Função proximoJogo modificada
+        function proximoJogo() {
+            currentGameIndex++;
+            saveGameData();
+            loadCurrentGame();
+        }
+
+        // Função updateGoals modificada
+        function updateGoals(teamNumber, playerIndex, goals) {
+            const game = games[currentGameIndex];
+            const goalCount = parseInt(goals) || 0;
+
+            let team1Total = 0;
+            let team2Total = 0;
+
+            game.team1.players.forEach((_, index) => {
+                const input = document.getElementById(`team1_player${index}`);
+                team1Total += parseInt(input.value) || 0;
+            });
+
+            game.team2.players.forEach((_, index) => {
+                const input = document.getElementById(`team2_player${index}`);
+                team2Total += parseInt(input.value) || 0;
+            });
+
+            document.getElementById('team1Goals').textContent = team1Total;
+            document.getElementById('team2Goals').textContent = team2Total;
+
+            game.goals1 = team1Total;
+            game.goals2 = team2Total;
+
+            // Salvar automaticamente
+            saveGameData();
+        }
+
+        // Salvar quando a página for fechada
+        window.addEventListener('beforeunload', saveGameData);
+    </script>
+
+    <script src="script-4b.js"></script>
+    <audio id="whistleSound" src="Som de Apito.mp3" preload="auto"></audio>
+</body>
+
+</html>

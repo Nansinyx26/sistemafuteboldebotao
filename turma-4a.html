@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Campeonato de Futebol de Botão Turma 4A</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>⚽ Campeonato de Futebol de Botão Turma 4A</h1>
+
+        <div class="card">
+            <h2>🏆 Times e Jogadores</h2>
+            <div class="teams-grid" id="teamsList"></div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Jogo Atual</h2>
+            <div class="current-game" id="currentGame">
+                <div class="game-header">
+                    <span id="gameNumber">Jogo 1 de 21</span>
+                </div>
+                <div class="match-display" id="matchDisplay">As Capivaras × Girl Power</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 Ficha de Jogo</h2>
+            <div class="timer-section">
+                <div class="timer-display" id="timerDisplay">10:00</div>
+                <div class="timer-controls">
+                    <button onclick="toggleTimer()" id="timerBtn">▶️ Play</button>
+                    <button onclick="resetTimer()" id="resetBtn">🔄 Reset</button>
+                </div>
+            </div>
+            <div class="game-sheet" id="gameSheet">
+                <div class="team-section">
+                    <div class="team-header">
+                        <span id="team1Name">As Capivaras</span>
+                        <span class="team-goals">[Gols: <span id="team1Goals">0</span>]</span>
+                    </div>
+                    <div class="players-list" id="team1Players"></div>
+                </div>
+
+                <div class="vs-divider">×</div>
+
+                <div class="team-section">
+                    <div class="team-header">
+                        <span id="team2Name">Girl Power</span>
+                        <span class="team-goals">[Gols: <span id="team2Goals">0</span>]</span>
+                    </div>
+                    <div class="players-list" id="team2Players"></div>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <div class="team-goal-controls">
+                    <div class="team-control">
+                        <h4 id="team1ControlName">As Capivaras</h4>
+                        <div class="quick-goal-section">
+                            <select id="team1PlayerSelect">
+                                <option value="">Selecione jogador</option>
+                            </select>
+                            <input type="number" id="team1GoalsInput" min="0" value="0" class="quick-goal-input" placeholder="Gols">
+                            <button onclick="addQuickGoal(1)" class="quick-goal-btn">⚽ Adicionar Gol</button>
+                        </div>
+                    </div>
+
+                    <div class="team-control">
+                        <h4 id="team2ControlName">Girl Power</h4>
+                        <div class="quick-goal-section">
+                            <select id="team2PlayerSelect">
+                                <option value="">Selecione jogador</option>
+                            </select>
+                            <input type="number" id="team2GoalsInput" min="0" value="0" class="quick-goal-input" placeholder="Gols">
+                            <button onclick="addQuickGoal(2)" class="quick-goal-btn">⚽ Adicionar Gol</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="finalizarJogo()" id="finishBtn">🏁 Finalizar Jogo</button>
+                <div class="winner-display" id="winnerDisplay" style="display: none;">
+                    <div class="winner-text" id="winnerText"></div>
+                    <button onclick="proximoJogo()" id="nextBtn">🔄 Próximo Jogo</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Resultados</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jogo</th>
+                        <th>Confronto</th>
+                        <th>Resultado</th>
+                        <th>Vencedor</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTable"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>🥇 Artilharia</h2>
+            <div class="artilharia-section">
+                <div class="chart-container" id="scorersChart">
+                    <div style="text-align: center; padding: 4rem; color: #666; font-size: 1.2rem;">
+                        🥅 Nenhum gol marcado ainda
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏆 Classificação</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Time</th>
+                        <th>Jogos</th>
+                        <th>Vitórias</th>
+                        <th>Empates</th>
+                        <th>Derrotas</th>
+                        <th>Gols Pró</th>
+                        <th>Gols Contra</th>
+                        <th>Saldo</th>
+                        <th>Pontos</th>
+                    </tr>
+                </thead>
+                <tbody id="standingsTable"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>📘 Histórico de Jogos</h2>
+            <div id="gamesBracket"></div>
+        </div>
+    </div>
+
+    <!-- APENAS UM SCRIPT - script-4a.js LIMPO -->
+    <script>
+        // Script inline temporário para debug
+        console.log('HTML da Turma 4A carregado');
+
+        // Verificar se há conflito de localStorage
+        console.log('LocalStorage keys:', Object.keys(localStorage));
+
+        // Limpar possíveis chaves conflitantes
+        const keysToRemove = [];
+        for (let key of Object.keys(localStorage)) {
+            if (key.includes('soccer') && key !== 'soccerTournament_4A') {
+                keysToRemove.push(key);
+            }
+        }
+
+        if (keysToRemove.length > 0) {
+            console.warn('Removendo chaves conflitantes:', keysToRemove);
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+        }
+    </script>
+
+    <script src="script-4a-fixed.js"></script>
+    <audio id="whistleSound" src="Som de Apito.mp3" preload="auto"></audio>
+</body>
+
+</html>

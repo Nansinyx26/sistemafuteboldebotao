@@ -1,0 +1,975 @@
+:root {
+    --bg-primary: #0a0a0a;
+    --bg-card: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --accent-primary: #00ff88;
+    --accent-secondary: #ff6b35;
+    --border-color: #333;
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --gradient-primary: linear-gradient(135deg, #00ff88, #00cc6a);
+    --gradient-bg: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--gradient-bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+    z-index: -1;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    margin-bottom: 2rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    position: relative;
+    padding-left: 20px;
+}
+
+h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+button {
+    background: var(--gradient-primary);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+    margin: 0.5rem;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+button:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.current-game {
+    background: var(--bg-card);
+    border: 2px solid var(--accent-primary);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    margin: 1rem 0;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+    }
+    to {
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+    }
+}
+
+.game-header {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.match-display {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+.timer-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 2px solid var(--accent-primary);
+}
+
+.timer-display {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    font-family: 'Courier New', monospace;
+}
+
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.timer-controls button {
+    margin: 0;
+}
+
+.game-sheet {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: start;
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.team-section {
+    text-align: left;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.team-goals {
+    color: var(--accent-primary);
+    font-weight: 800;
+}
+
+.vs-divider {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent-secondary);
+    align-self: center;
+    text-align: center;
+}
+
+.players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.player-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+.player-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.goal-input {
+    width: 60px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.3rem;
+    color: var(--text-primary);
+    text-align: center;
+    font-weight: 600;
+}
+
+.goal-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+}
+
+.game-controls {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.winner-display {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 12px;
+    border: 1px solid var(--accent-primary);
+}
+
+.winner-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--accent-primary);
+}
+
+.tournament-complete,
+.final-message {
+    text-align: center;
+    padding: 2rem;
+    background: var(--gradient-primary);
+    border-radius: 16px;
+    color: #000;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+th {
+    background: var(--gradient-primary);
+    color: #000;
+    padding: 1rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    text-align: center;
+}
+
+tr:hover td {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.team-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    border-color: var(--accent-primary);
+    transform: scale(1.02);
+}
+
+.team-goal-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 2px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.team-control {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.team-control:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+}
+
+.team-control h4 {
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.quick-goal-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.quick-goal-input {
+    width: 100px;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem;
+    color: var(--text-primary);
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.quick-goal-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
+}
+
+.quick-goal-btn {
+    background: var(--gradient-primary);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-goal-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.quick-goal-btn:hover::before {
+    left: 100%;
+}
+
+.quick-goal-btn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+}
+
+.quick-goal-btn:active {
+    transform: translateY(-1px);
+}
+
+#team1PlayerSelect,
+#team2PlayerSelect {
+    width: 100%;
+    margin: 0;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+#team1PlayerSelect:focus,
+#team2PlayerSelect:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
+}
+
+#team1PlayerSelect option,
+#team2PlayerSelect option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+.chart-container {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.artilharia-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+
+/* Estilos do Chaveamento de Artilharia estilo FIFA */
+
+.fifa-bracket {
+    background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+    border: 2px solid var(--accent-primary);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.fifa-bracket::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+    z-index: 0;
+}
+
+.fifa-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 1;
+}
+
+.fifa-header h3 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00ff88, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+    letter-spacing: 2px;
+}
+
+.fifa-header p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.fifa-logo {
+    font-size: 3rem;
+    margin-top: 1rem;
+    animation: ball-spin 3s linear infinite;
+}
+
+@keyframes ball-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.bracket-structure {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 3rem;
+    align-items: center;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 1;
+}
+
+.bracket-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.bracket-player {
+    display: flex;
+    align-items: center;
+    animation: slideIn 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.right-player {
+    flex-direction: row-reverse;
+}
+
+.right-player {
+    animation-name: slideInRight;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.player-box {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    min-width: 200px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.player-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.player-box:hover::before {
+    left: 100%;
+}
+
+.player-box:hover {
+    border-color: var(--accent-primary);
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+}
+
+.player-rank {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: var(--gradient-primary);
+    color: #000;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    border: 2px solid var(--bg-primary);
+}
+
+.player-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.player-goals {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+}
+
+.player-ball {
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.player-connector {
+    width: 40px;
+    height: 2px;
+    background: var(--accent-primary);
+    position: relative;
+}
+
+.left-connector::after,
+.right-connector::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.left-connector::after {
+    right: -8px;
+    transform: translateY(-50%);
+    border-left: 8px solid var(--accent-primary);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+}
+
+.right-connector::before {
+    left: -8px;
+    transform: translateY(-50%);
+    border-right: 8px solid var(--accent-primary);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+}
+
+.bracket-center {
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+}
+
+.center-title {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+}
+
+.center-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+.final-box {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border: 3px solid #ffa500;
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 1rem 0;
+    color: #000;
+    animation: golden-glow 3s ease-in-out infinite alternate;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes golden-glow {
+    from {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    to {
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+    }
+}
+
+.final-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient( 45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.1) 10px, rgba(255, 255, 255, 0.1) 20px);
+    animation: shine 4s linear infinite;
+}
+
+@keyframes shine {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.champion-player {
+    position: relative;
+    z-index: 1;
+}
+
+.champion-crown {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    animation: crown-bounce 2s ease-in-out infinite;
+}
+
+@keyframes crown-bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.champion-name {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.champion-goals {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.champion-ball {
+    font-size: 2rem;
+    animation: ball-bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes ball-bounce {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.center-logo {
+    font-size: 2rem;
+    margin-top: 1rem;
+    animation: medal-swing 3s ease-in-out infinite;
+}
+
+@keyframes medal-swing {
+    0%,
+    100% {
+        transform: rotate(-10deg);
+    }
+    50% {
+        transform: rotate(10deg);
+    }
+}
+
+.full-ranking {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+    position: relative;
+    z-index: 1;
+}
+
+.ranking-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+}
+
+.ranking-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.ranking-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.ranking-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-primary);
+}
+
+.ranking-item.golden {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 237, 78, 0.2));
+    border-color: #ffd700;
+    animation: golden-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes golden-pulse {
+    from {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    }
+}
+
+.ranking-item.podium {
+    background: rgba(192, 192, 192, 0.1);
+    border-color: #c0c0c0;
+}
+
+.rank-position {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+}
+
+.ranking-item.golden .rank-position {
+    color: #ffd700;
+}
+
+.rank-name {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.rank-goals {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-secondary);
+}
+
+
+/* Responsividade */
+
+@media (max-width: 1024px) {
+    .bracket-structure {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .bracket-center {
+        order: -1;
+    }
+    .player-connector {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    .card {
+        padding: 1.5rem;
+    }
+    .game-sheet {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .vs-divider {
+        display: none;
+    }
+    .team-header {
+        justify-content: center;
+        text-align: center;
+    }
+    .teams-grid {
+        grid-template-columns: 1fr;
+    }
+    .team-goal-controls {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .fifa-header h3 {
+        font-size: 2rem;
+    }
+    .fifa-header p {
+        font-size: 1rem;
+    }
+    .player-box {
+        min-width: 150px;
+        padding: 0.8rem 1rem;
+    }
+    .final-box {
+        padding: 1.5rem;
+    }
+    .ranking-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .player-row {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    .goal-input {
+        width: 80px;
+    }
+    .fifa-bracket {
+        padding: 1rem;
+    }
+    .bracket-structure {
+        gap: 1rem;
+    }
+    .player-box {
+        min-width: 120px;
+        padding: 0.6rem 0.8rem;
+    }
+    .player-name {
+        font-size: 1rem;
+    }
+    .player-goals {
+        font-size: 1.1rem;
+    }
+}
