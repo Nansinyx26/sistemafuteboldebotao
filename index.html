@@ -4,11 +4,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turmas 4A, 4B e 4C - Página Principal</title>
+    <title>Turmas 4A, 4B, 4C e 4D - Página Principal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
+        .turma-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            z-index: 1;
+        }
 
+        .turma-4a::before {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .turma-4b::before {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .turma-4c::before {
+            background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .turma-4d::before {
+            background: linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%);
+        }
+
+        .turma-card {
+            position: relative;
+            overflow: hidden;
+        }
     </style>
 </head>
 
@@ -40,12 +69,13 @@
                 <p>6 times • 24 jogadores</p>
                 <button class="enter-btn">Entrar na Turma</button>
             </div>
-        </div>
 
-        <div class="all-teams-card" onclick="goToAllTeams()">
-            <h3>📋 Ver Todas as Turmas</h3>
-            <p>Visualize todos os times das três turmas em uma única página</p>
-            <button class="all-teams-btn">Ver Todos os Times</button>
+            <div class="turma-card turma-4d" onclick="goToTurma('4d')">
+                <span class="turma-icon">🦄</span>
+                <h2>4D</h2>
+                <p>6 times • 26 jogadores</p>
+                <button class="enter-btn">Entrar na Turma</button>
+            </div>
         </div>
     </div>
 
@@ -61,25 +91,20 @@
                 case '4c':
                     window.location.href = 'turma-4c.html';
                     break;
+                case '4d':
+                    window.location.href = 'turma-4d.html';
+                    break;
             }
         }
 
-        function goToAllTeams() {
-            window.location.href = 'todas-turmas.html';
-        }
-
         // Adiciona efeito de hover com movimento suave
-        document.querySelectorAll('.turma-card, .all-teams-card').forEach(card => {
+        document.querySelectorAll('.turma-card').forEach(card => {
             card.addEventListener('mouseenter', function() {
-                this.style.transform = this.classList.contains('turma-card') ?
-                    'translateY(-10px) scale(1.05)' :
-                    'translateY(-5px)';
+                this.style.transform = 'translateY(-10px) scale(1.05)';
             });
 
             card.addEventListener('mouseleave', function() {
-                this.style.transform = this.classList.contains('turma-card') ?
-                    'translateY(0) scale(1)' :
-                    'translateY(0)';
+                this.style.transform = 'translateY(0) scale(1)';
             });
         });
     </script>
