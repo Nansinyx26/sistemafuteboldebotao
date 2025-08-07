@@ -1,5 +1,5 @@
 const teams = [
-    { name: "Cinco Estrelas", players: ["Nicolas F.", "Bryan", "Emanuélly", "Enzo"] },
+    { name: "Cinco Estrelas", players: ["Nicolas F.", "Bryan", "Emanuélly", "Nicolas D."] },
     { name: "Tung Tung Tung Tung SahuR", players: ["Miguel", "Pedro", "Antônio", "Luan"] },
     { name: "Girl dos Rosas", players: ["Ana Laura", "Maria Fernanda", "Enzo H.", "Isabela"] },
     { name: "Winx of The King of The Power da Quebrada", players: ["Alice", "Lorena", "Júlia G.", "Melyssa"] },
