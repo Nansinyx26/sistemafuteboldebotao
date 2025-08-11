@@ -32,6 +32,9 @@ const gamesList = [
     { team1: 5, team2: 6 }  // Premium League × Os Artistas
 ];
 
+// CHAVE ÚNICA PARA TURMA 4D
+const STORAGE_KEY = 'dados_campeonato_4D';
+
 // Estado do jogo
 let currentGameIndex = 0;
 let games = [];
@@ -42,44 +45,54 @@ let timerInterval = null;
 let timeRemaining = 600;
 let isTimerRunning = false;
 
-// FUNÇÕES DE SALVAMENTO
+// FUNÇÕES DE SALVAMENTO CORRIGIDAS
 function saveGameData() {
-    const gameData = {
-        games,
-        scorers,
-        standings,
-        currentGameIndex,
-        timestamp: Date.now()
-    };
-    localStorage.setItem('soccerTournament_4D', JSON.stringify(gameData));
+    try {
+        const gameData = {
+            games,
+            scorers,
+            standings,
+            currentGameIndex,
+            timestamp: Date.now(),
+            turma: '4D'
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
+        console.log('✅ Dados da Turma 4D salvos com sucesso!');
+        showNotification('💾 Dados salvos com sucesso!');
+        return true;
+    } catch (error) {
+        console.error('❌ Erro ao salvar dados:', error);
+        showNotification('❌ Erro ao salvar dados!');
+        return false;
+    }
 }
 
 function loadGameData() {
-    const savedData = localStorage.getItem('soccerTournament_4D');
-    if (savedData) {
-        try {
+    try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
             const gameData = JSON.parse(savedData);
 
-            if (gameData.games && gameData.scorers && gameData.standings) {
+            if (gameData.games && gameData.scorers && gameData.standings && gameData.turma === '4D') {
                 games = gameData.games;
                 scorers = gameData.scorers;
                 standings = gameData.standings;
                 currentGameIndex = gameData.currentGameIndex || 0;
 
-                console.log('Dados carregados do localStorage');
+                console.log('✅ Dados da Turma 4D carregados com sucesso!');
                 return true;
             }
-        } catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            localStorage.removeItem('soccerTournament_4D');
         }
+    } catch (error) {
+        console.error('❌ Erro ao carregar dados:', error);
+        localStorage.removeItem(STORAGE_KEY);
     }
     return false;
 }
 
 function resetTournament() {
-    if (confirm('⚠️ Tem certeza que deseja resetar todo o campeonato?\n\nTodos os jogos, gols e classificações serão perdidos!')) {
-        localStorage.removeItem('soccerTournament_4D');
+    if (confirm('⚠️ Tem certeza que deseja resetar todo o campeonato da Turma 4D?\n\nTodos os jogos, gols e classificações serão perdidos!')) {
+        localStorage.removeItem(STORAGE_KEY);
         currentGameIndex = 0;
         scorers = {};
 
@@ -90,17 +103,20 @@ function resetTournament() {
         updateStandings();
         updateChart();
 
-        showNotification('🔄 Campeonato resetado com sucesso!');
+        showNotification('🔄 Campeonato da Turma 4D resetado com sucesso!');
     }
 }
 
 // Inicialização
 function init() {
+    console.log('🚀 Inicializando Turma 4D...');
     const dataLoaded = loadGameData();
 
     if (!dataLoaded) {
+        console.log('📝 Criando novos dados para Turma 4D...');
         initializeGames();
         initializeStandings();
+        saveGameData(); // Salvar dados iniciais
     }
 
     renderTeams();
@@ -116,7 +132,7 @@ function init() {
     if (dataLoaded) {
         const finishedGames = games.filter(game => game.finished).length;
         if (finishedGames > 0) {
-            showNotification(`✅ ${finishedGames} jogos carregados`);
+            showNotification(`✅ Turma 4D: ${finishedGames} jogos carregados`);
         }
     }
 }
@@ -242,6 +258,9 @@ function addQuickGoal(teamNumber) {
     // Resetar seleção
     playerSelect.value = '';
     goalsInput.value = 0;
+
+    // Salvar automaticamente após adicionar gol
+    saveGameData();
 }
 
 function loadPlayers() {
@@ -336,7 +355,10 @@ function finalizarJogo() {
     game.finished = true;
 
     // SALVAR AUTOMATICAMENTE
-    saveGameData();
+    const saved = saveGameData();
+    if (saved) {
+        showNotification('🏁 Jogo finalizado e salvo!');
+    }
 
     // Mostrar resultado
     document.getElementById('winnerText').textContent = winnerText;
@@ -385,13 +407,13 @@ function showTournamentComplete() {
     document.getElementById('currentGame').innerHTML = `
         <div class="tournament-complete">
             <h2>🏆 Campeonato Finalizado!</h2>
-            <p>Todos os ${games.length} jogos foram concluídos.</p>
+            <p>Todos os 21 jogos foram concluídos.</p>
         </div>
     `;
 
     document.getElementById('gameSheet').innerHTML = `
         <div class="final-message">
-            <h3>Parabéns a todos os participantes!</h3>
+            <h3>Parabéns a todos os participantes da Turma 4D!</h3>
             <p>Confira a classificação final e a artilharia abaixo.</p>
         </div>
     `;
@@ -430,13 +452,13 @@ function updateStandings() {
             <td>${stats.draws}</td>
             <td>${stats.losses}</td>
             <td>${stats.goalsFor}</td>
+            <td>${stats.goalsAgainst}</td>
             <td>${stats.goalsFor - stats.goalsAgainst}</td>
             <td><strong>${stats.points}</strong></td>
         </tr>
     `).join('');
 }
 
-// NOVA FUNÇÃO - Chaveamento FIFA
 function updateChart() {
     const container = document.getElementById('scorersChart').parentElement;
     
@@ -452,24 +474,21 @@ function updateChart() {
     // Ordenar artilheiros por gols
     const sortedScorers = Object.entries(scorers)
         .sort(([,a], [,b]) => b - a)
-        .slice(0, 8); // Top 8 artilheiros
+        .slice(0, 8);
 
-    // Criar estrutura de chaveamento estilo FIFA
     container.innerHTML = `
         <div class="fifa-bracket">
             <div class="fifa-header">
                 <h3>🏆 ARTILHARIA</h3>
-                <p>CAMPEONATO DE FUTEBOL 2025</p>
+                <p>CAMPEONATO DE FUTEBOL 2025 - TURMA 4D</p>
                 <div class="fifa-logo">⚽</div>
             </div>
             
             <div class="bracket-structure">
-                <!-- Lado Esquerdo -->
                 <div class="bracket-side left-side">
                     ${generateLeftBracket(sortedScorers.slice(0, 4))}
                 </div>
                 
-                <!-- Centro - Final -->
                 <div class="bracket-center">
                     <div class="center-title">ARTILHEIRO</div>
                     <div class="center-subtitle">CHUTEIRA DE OURO</div>
@@ -486,13 +505,11 @@ function updateChart() {
                     <div class="center-logo">🥇</div>
                 </div>
                 
-                <!-- Lado Direito -->
                 <div class="bracket-side right-side">
                     ${generateRightBracket(sortedScorers.slice(4, 8))}
                 </div>
             </div>
             
-            <!-- Ranking completo embaixo -->
             <div class="full-ranking">
                 <div class="ranking-title">🏅 RANKING COMPLETO</div>
                 <div class="ranking-grid">
@@ -509,49 +526,6 @@ function updateChart() {
     `;
 }
 
-function renderGameBracket() {
-    const container = document.getElementById('gamesBracket');
-    
-    if (!container) return;
-
-    const finishedGames = games.filter(game => game.finished);
-
-    if (finishedGames.length === 0) {
-        container.innerHTML = `<div style="text-align: center; padding: 2rem;">⚠️ Nenhum jogo finalizado ainda</div>`;
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="fifa-bracket">
-            <div class="fifa-header">
-                <h3>🎮 HISTÓRICO DE JOGOS</h3>
-                <p>Resultados do Campeonato</p>
-                <div class="fifa-logo">📅</div>
-            </div>
-            <div class="bracket-structure">
-                <div class="bracket-side left-side">
-                    ${finishedGames.slice(0, Math.ceil(finishedGames.length / 2)).map(renderGameBox).join('')}
-                </div>
-                <div class="bracket-side right-side">
-                    ${finishedGames.slice(Math.ceil(finishedGames.length / 2)).map(renderGameBox).join('')}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function renderGameBox(game, index) {
-    return `
-        <div class="bracket-player" style="animation-delay: ${index * 0.15}s">
-            <div class="player-box">
-                <div class="player-name">${game.team1.name} ${game.goals1} × ${game.goals2} ${game.team2.name}</div>
-                <div class="player-goals">${game.winner === 'Empate' ? '🤝 Empate' : '🏆 ' + game.winner}</div>
-            </div>
-        </div>
-    `;
-}
-
-// NOVA FUNÇÃO - Lado Esquerdo do Chaveamento
 function generateLeftBracket(players) {
     return players.map((player, index) => `
         <div class="bracket-player left-player" style="animation-delay: ${index * 0.2}s">
@@ -566,7 +540,6 @@ function generateLeftBracket(players) {
     `).join('');
 }
 
-// NOVA FUNÇÃO - Lado Direito do Chaveamento
 function generateRightBracket(players) {
     return players.map((player, index) => `
         <div class="bracket-player right-player" style="animation-delay: ${(index + 4) * 0.2}s">
@@ -581,7 +554,6 @@ function generateRightBracket(players) {
     `).join('');
 }
 
-// NOVA FUNÇÃO - Obter Posição do Jogador
 function getPlayerRank(playerName) {
     const sortedScorers = Object.entries(scorers).sort(([,a], [,b]) => b - a);
     const rank = sortedScorers.findIndex(([name]) => name === playerName) + 1;
@@ -635,7 +607,7 @@ function pauseTimer() {
 
 function resetTimer() {
     pauseTimer();
-    timeRemaining = 600; // 10 minutos
+    timeRemaining = 600;
     updateTimerDisplay();
 }
 
@@ -645,7 +617,6 @@ function updateTimerDisplay() {
     const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     document.getElementById('timerDisplay').textContent = display;
     
-    // Mudar cor quando restam menos de 2 minutos
     const timerDisplay = document.getElementById('timerDisplay');
     if (timeRemaining <= 120) {
         timerDisplay.style.color = '#ff6b35';
@@ -654,6 +625,7 @@ function updateTimerDisplay() {
     }
 }
 
+// Função para mostrar notificação
 function showNotification(message) {
     const notification = document.createElement('div');
     notification.textContent = message;
@@ -679,16 +651,29 @@ function showNotification(message) {
                 from { transform: translateX(100%); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
             }
-            .reset-btn {
-                margin-left: 1rem !important;
-                background: var(--accent-secondary) !important;
+            .save-btn {
+                background: #28a745 !important;
                 color: white !important;
-                font-size: 0.9rem !important;
-                padding: 0.5rem 1rem !important;
+                border: none !important;
+                border-radius: 8px !important;
+                padding: 0.75rem 1.5rem !important;
+                font-size: 1rem !important;
+                font-weight: 600 !important;
+                cursor: pointer !important;
+                transition: all 0.3s ease !important;
+                margin-right: 1rem !important;
             }
-            .reset-btn:hover {
-                filter: brightness(1.2) !important;
+            .save-btn:hover {
+                background: #218838 !important;
                 transform: translateY(-2px) !important;
+                box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+            }
+            .main-controls {
+                display: flex !important;
+                gap: 1rem !important;
+                justify-content: center !important;
+                align-items: center !important;
+                margin-top: 1rem !important;
             }
         `;
         document.head.appendChild(style);
@@ -697,24 +682,58 @@ function showNotification(message) {
     document.body.appendChild(notification);
 
     setTimeout(() => {
-        if (notification.parentNode) {
-            notification.remove();
-        }
+        notification.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
     }, 3000);
 }
 
+// Adicionar botão de reset
 function addResetButton() {
-    const resultsCard = [...document.querySelectorAll('.card h2')]
-        .find(h2 => h2.textContent.includes('📊 Resultados'));
+    const resultsCards = document.querySelectorAll('.card h2');
+    for (let header of resultsCards) {
+        if (header.textContent.includes('📊 Resultados') && !header.querySelector('.reset-btn')) {
+            const resetBtn = document.createElement('button');
+            resetBtn.textContent = '🔄 Reset Campeonato';
+            resetBtn.className = 'reset-btn';
+            resetBtn.onclick = resetTournament;
+            resetBtn.style.cssText = `
+                margin-left: 1rem;
+                background: var(--accent-secondary);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            `;
 
-    if (resultsCard && !resultsCard.querySelector('.reset-btn')) {
-        const resetBtn = document.createElement('button');
-        resetBtn.textContent = '🔄 Reset';
-        resetBtn.className = 'reset-btn';
-        resetBtn.onclick = resetTournament;
-        resultsCard.appendChild(resetBtn);
+            resetBtn.addEventListener('mouseenter', function() {
+                this.style.filter = 'brightness(1.2)';
+                this.style.transform = 'translateY(-2px)';
+            });
+
+            resetBtn.addEventListener('mouseleave', function() {
+                this.style.filter = 'brightness(1)';
+                this.style.transform = 'translateY(0)';
+            });
+
+            header.appendChild(resetBtn);
+            break;
+        }
     }
 }
 
 // Inicializar ao carregar a página
 document.addEventListener('DOMContentLoaded', init);
+
+// Salvar quando a página for fechada
+window.addEventListener('beforeunload', saveGameData);
+
+// Salvar a cada 30 segundos (backup automático)
+setInterval(saveGameData, 30000);
