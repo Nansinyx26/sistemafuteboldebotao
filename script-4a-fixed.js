@@ -3,7 +3,7 @@ const teams = [
     { name: "Girl Power", players: ["Vitória D.", "Júlia B.", "Júlia C.", "Alice V."] },
     { name: "São Paulo", players: ["Kaleb P.", "Clara C.", "Matheus L.", "Pedro M."] },
     { name: "Lilo Stitch", players: ["Agnes L.", "Sofia M.", "Laura R."] },
-    { name: "Corinthians", players: ["Isabela R.", "Ana Beatriz O.", "Giovanna S.", "tauane L."] },
+    { name: "Corinthians", players: ["Isabela R.", "Ana Beatriz O.", "Giovanna S.", "Thauane L."] },
     { name: "Barcelona", players: ["Brian F.", "Laerte C.", "Gustavo L.", "Leonardo M."] },
     { name: "Santos", players: ["Davi L.", "Agatha P.", "Sofia K.", "Isabelle G."] }
 ];
@@ -691,3 +691,4 @@ document.addEventListener('DOMContentLoaded', init);
 // Salvar quando a página for fechada
 
 window.addEventListener('beforeunload', saveGameData);
+
