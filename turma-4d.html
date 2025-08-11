@@ -82,7 +82,11 @@
                     </div>
                 </div>
 
-                <button onclick="finalizarJogo()" id="finishBtn">🏁 Finalizar Jogo</button>
+                <div class="main-controls">
+                    <button onclick="saveGameData()" class="save-btn">💾 Salvar Dados</button>
+                    <button onclick="finalizarJogo()" id="finishBtn">🏁 Finalizar Jogo</button>
+                </div>
+                
                 <div class="winner-display" id="winnerDisplay" style="display: none;">
                     <div class="winner-text" id="winnerText"></div>
                     <button onclick="proximoJogo()" id="nextBtn">🔄 Próximo Jogo</button>
@@ -128,6 +132,7 @@
                         <th>Empates</th>
                         <th>Derrotas</th>
                         <th>Gols Pró</th>
+                        <th>Gols Contra</th>
                         <th>Saldo</th>
                         <th>Pontos</th>
                     </tr>
@@ -136,136 +141,9 @@
             </table>
         </div>
     </div>
+   
+    <div id="gamesBracket"></div>
     
-        <div id="gamesBracket"></div>
-    </div>
-
-    <!-- Scripts -->
-    <script>
-        // Sistema de salvamento com localStorage
-
-        // Salvar dados no localStorage
-        function saveGameData() {
-            const gameData = {
-                games,
-                scorers,
-                standings,
-                currentGameIndex,
-                timestamp: Date.now()
-            };
-            localStorage.setItem('soccerTournament_4D', JSON.stringify(gameData));
-        }
-
-        // Carregar dados do localStorage
-        function loadGameData() {
-            const savedData = localStorage.getItem('soccerTournament_4D');
-            if (savedData) {
-                try {
-                    const gameData = JSON.parse(savedData);
-
-                    if (gameData.games && gameData.scorers && gameData.standings) {
-                        games = gameData.games;
-                        scorers = gameData.scorers;
-                        standings = gameData.standings;
-                        currentGameIndex = gameData.currentGameIndex || 0;
-
-                        console.log('Dados carregados do localStorage');
-                        return true;
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                    localStorage.removeItem('soccerTournament_4D');
-                }
-            }
-            return false;
-        }
-
-        // Resetar todos os dados
-        function resetTournament() {
-            if (confirm('⚠️ Tem certeza que deseja resetar todo o campeonato?\n\nTodos os jogos, gols e classificações serão perdidos!')) {
-                localStorage.removeItem('soccerTournament_4D');
-                currentGameIndex = 0;
-                scorers = {};
-
-                initializeGames();
-                initializeStandings();
-                loadCurrentGame();
-                updateResults();
-                updateStandings();
-                updateChart();
-
-                showNotification('🔄 Campeonato resetado com sucesso!');
-            }
-        }
-
-        // Mostrar notificação
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--accent-primary);
-                color: #000;
-                padding: 1rem 1.5rem;
-                border-radius: 12px;
-                font-weight: 600;
-                z-index: 1000;
-                animation: slideIn 0.3s ease-out;
-                box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
-            `;
-
-            if (!document.getElementById('notification-style')) {
-                const style = document.createElement('style');
-                style.id = 'notification-style';
-                style.textContent = `
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                    .reset-btn {
-                        margin-left: 1rem !important;
-                        background: var(--accent-secondary) !important;
-                        color: white !important;
-                        font-size: 0.9rem !important;
-                        padding: 0.5rem 1rem !important;
-                    }
-                    .reset-btn:hover {
-                        filter: brightness(1.2) !important;
-                        transform: translateY(-2px) !important;
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 3000);
-        }
-
-        // Adicionar botão de reset
-        function addResetButton() {
-            const resultsCard = [...document.querySelectorAll('.card h2')]
-                .find(h2 => h2.textContent.includes('📊 Resultados'));
-
-            if (resultsCard && !resultsCard.querySelector('.reset-btn')) {
-                const resetBtn = document.createElement('button');
-                resetBtn.textContent = '🔄 Reset';
-                resetBtn.className = 'reset-btn';
-                resetBtn.onclick = resetTournament;
-                resultsCard.appendChild(resetBtn);
-            }
-        }
-
-        // Salvar quando a página for fechada
-        window.addEventListener('beforeunload', saveGameData);
-    </script>
-
     <script src="script-4d.js"></script>
     <audio id="whistleSound" src="Som de Apito.mp3" preload="auto"></audio>
 </body>
