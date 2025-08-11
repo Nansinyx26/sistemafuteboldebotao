@@ -2,8 +2,8 @@ const teams = [
     { name: "As Capivaras", players: ["Ana Beatriz", "Sara C.", "Luisa M.", "Aisha M."] },
     { name: "Girl Power", players: ["Vitória D.", "Júlia B.", "Júlia C.", "Alice V."] },
     { name: "São Paulo", players: ["Kaleb P.", "Clara C.", "Matheus L.", "Pedro M."] },
-    { name: "Little Stitch", players: ["Agnes L.", "Sofia M.", "Laura R."] },
-    { name: "Corinthians", players: ["Isabela R.", "Ana Beatriz O.", "Giovanna S.", "Itaúane L."] },
+    { name: "Lilo Stitch", players: ["Agnes L.", "Sofia M.", "Laura R."] },
+    { name: "Corinthians", players: ["Isabela R.", "Ana Beatriz O.", "Giovanna S.", "tauane L."] },
     { name: "Barcelona", players: ["Brian F.", "Laerte C.", "Gustavo L.", "Leonardo M."] },
     { name: "Santos", players: ["Davi L.", "Agatha P.", "Sofia K.", "Isabelle G."] }
 ];
@@ -11,22 +11,22 @@ const teams = [
 const gamesList = [
     { team1: 0, team2: 1 }, // As Capivaras × Girl Power
     { team1: 0, team2: 2 }, // As Capivaras × São Paulo
-    { team1: 0, team2: 3 }, // As Capivaras × Little Stitch
+    { team1: 0, team2: 3 }, // As Capivaras × Lilo Stitch
     { team1: 0, team2: 4 }, // As Capivaras × Corinthians
     { team1: 0, team2: 5 }, // As Capivaras × Barcelona
     { team1: 0, team2: 6 }, // As Capivaras × Santos
     { team1: 1, team2: 2 }, // Girl Power × São Paulo
-    { team1: 1, team2: 3 }, // Girl Power × Little Stitch
+    { team1: 1, team2: 3 }, // Girl Power × Lilo Stitch
     { team1: 1, team2: 4 }, // Girl Power × Corinthians
     { team1: 1, team2: 5 }, // Girl Power × Barcelona
     { team1: 1, team2: 6 }, // Girl Power × Santos
-    { team1: 2, team2: 3 }, // São Paulo × Little Stitch
+    { team1: 2, team2: 3 }, // São Paulo × Lilo Stitch
     { team1: 2, team2: 4 }, // São Paulo × Corinthians
     { team1: 2, team2: 5 }, // São Paulo × Barcelona
     { team1: 2, team2: 6 }, // São Paulo × Santos
-    { team1: 3, team2: 4 }, // Little Stitch × Corinthians
-    { team1: 3, team2: 5 }, // Little Stitch × Barcelona
-    { team1: 3, team2: 6 }, // Little Stitch × Santos
+    { team1: 3, team2: 4 }, // Lilo Stitch × Corinthians
+    { team1: 3, team2: 5 }, // Lilo Stitch × Barcelona
+    { team1: 3, team2: 6 }, // Lilo Stitch × Santos
     { team1: 4, team2: 5 }, // Corinthians × Barcelona
     { team1: 4, team2: 6 }, // Corinthians × Santos
     { team1: 5, team2: 6 } // Barcelona × Santos
@@ -689,4 +689,5 @@ function addResetButton() {
 document.addEventListener('DOMContentLoaded', init);
 
 // Salvar quando a página for fechada
+
 window.addEventListener('beforeunload', saveGameData);
